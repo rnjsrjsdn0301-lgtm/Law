@@ -410,8 +410,9 @@
     right: 24px;
     z-index: 250;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
   }
   .law-search-btn {
     width: 44px; height: 44px;
@@ -436,17 +437,19 @@
     padding: 6px 10px 6px 16px;
     box-shadow: 0 4px 16px rgba(26,86,160,0.15);
     animation: slideIn 0.18s ease;
+    max-width: calc(100vw - 48px);
   }
   .law-search-box.open { display: flex; }
   @keyframes slideIn {
-    from { opacity: 0; transform: translateX(10px); }
-    to   { opacity: 1; transform: translateX(0); }
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
   .law-search-input {
     border: none; outline: none;
     font-family: inherit;
     font-size: 14px;
-    width: 180px;
+    width: 160px;
+    min-width: 0;
     color: var(--text-dark);
     background: transparent;
   }
