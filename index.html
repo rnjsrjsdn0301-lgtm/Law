@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>익스테딕 공화국 법령정보센터</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+  :root {
+    --red: #1A56A0;
+    --red-dark: #0F3D7A;
+    --red-light: #2E74CC;
+    --white: #FFFFFF;
+    --off-white: #F5F8FC;
+    --light-gray: #EEF3FA;
+    --mid-gray: #D8E4F0;
+    --text-dark: #1A1A1A;
+    --text-mid: #444444;
+    --text-light: #777777;
+    --border: #D8E4F0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--white);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--white);
+    border-bottom: 2px solid var(--red);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+  }
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .maple-icon {
+    width: 40px;
+    height: 40px;
+    position: relative;
+  }
+  .maple-icon svg { width: 100%; height: 100%; }
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .logo-main {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: -0.3px;
+  }
+  .logo-sub {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-light);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .header-nav {
+    display: flex;
+    gap: 4px;
+  }
+  .nav-btn {
+    padding: 8px 18px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-mid);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { background: var(--light-gray); color: var(--text-dark); }
+  .nav-btn.active { background: var(--red); color: white; }
+
+  /* ── HERO BANNER ── */
+  .hero {
+    background: linear-gradient(135deg, #1A56A0 0%, #0F3D7A 100%);
+    color: white;
+    padding: 52px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 250px; height: 250px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+  .hero-inner { max-width: 700px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+  }
+  .hero p {
+    font-size: 15px;
+    opacity: 0.85;
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+  .search-box {
+    display: flex;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .search-box input {
+    flex: 1;
+    padding: 14px 18px;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text-dark);
+  }
+  .search-box button {
+    padding: 14px 28px;
+    background: var(--red);
+    border: none;
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .search-box button:hover { background: var(--red-dark); }
+
+  /* ── CATEGORY TABS ── */
+  .category-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 72px;
+    z-index: 90;
+  }
+  .category-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .category-inner::-webkit-scrollbar { display: none; }
+  .cat-tab {
+    padding: 14px 22px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .cat-tab:hover { color: var(--red); }
+  .cat-tab.active { color: var(--red); border-bottom-color: var(--red); font-weight: 600; }
+
+  /* ── MAIN LAYOUT ── */
+  .main-layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 24px;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 36px;
+  }
+
+  /* ── LAW LIST ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+  .count-badge {
+    font-size: 12px;
+    color: var(--text-light);
+    font-weight: 400;
+  }
+  .law-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .law-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 22px;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+  }
+  .law-card:hover {
+    border-color: var(--red);
+    box-shadow: 0 2px 12px rgba(26,86,160,0.10);
+    transform: translateY(-1px);
+  }
+  .law-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .law-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-dark);
+    line-height: 1.4;
+  }
+  .law-category-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: 12px;
+    flex-shrink: 0;
+  }
+  .tag-constitutional { background: #EEF3FA; color: var(--red); }
+  .tag-criminal { background: #FFF5E5; color: #CC6600; }
+  .tag-civil { background: #F0F7FF; color: #0066CC; }
+  .tag-immigration { background: #F0FFF4; color: #006633; }
+  .tag-tax { background: #F5F0FF; color: #6600CC; }
+  .tag-decree { background: #FFF0F5; color: #AA0055; }
+  .tag-etc { background: #F5F5F5; color: #555555; }
+  .tag-labor { background: #F5F5F5; color: #555555; } /* 하위호환 */
+
+  .law-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .law-meta span { display: flex; align-items: center; gap: 4px; }
+  .version-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: var(--light-gray);
+    border-radius: 4px;
+    color: var(--text-light);
+  }
+  .new-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    background: var(--red);
+    color: white;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar { display: flex; flex-direction: column; gap: 24px; }
+  .sidebar-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .sidebar-card-header {
+    padding: 14px 18px;
+    background: var(--off-white);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sidebar-card-body { padding: 16px 18px; }
+  .notice-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .notice-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .notice-item a { color: var(--text-mid); text-decoration: none; cursor: pointer; }
+  .notice-item a:hover { color: var(--red); }
+  .notice-date { font-size: 11px; color: var(--text-light); margin-top: 3px; }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 700; color: var(--red); }
+  .stat-label { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+  /* ── LAW DETAIL PAGE (full page) ── */
+  #lawPage {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #FAFAFA;
+    z-index: 200;
+    overflow-y: auto;
+  }
+  #lawPage.show { display: block; }
+
+  .law-page-header {
+    background: white;
+    border-bottom: 2px solid var(--red);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .law-page-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--light-gray);
+    border: none;
+    color: var(--text-mid);
+    padding: 9px 20px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .law-page-back:hover { background: var(--mid-gray); color: var(--text-dark); }
+
+  .law-page-inner {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 40px 8px 80px;
+  }
+
+  .law-page-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .law-page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.35;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* ── 법령 내 검색 (오른쪽 상단 고정) ── */
+  .law-search-fixed {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    z-index: 250;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .law-search-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.18s;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    flex-shrink: 0;
+  }
+  .law-search-btn:hover { border-color: var(--red); box-shadow: 0 3px 16px rgba(26,86,160,0.2); }
+  .law-search-box {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border: 2px solid var(--red);
+    border-radius: 24px;
+    padding: 6px 10px 6px 16px;
+    box-shadow: 0 4px 16px rgba(26,86,160,0.15);
+    animation: slideIn 0.18s ease;
+  }
+  .law-search-box.open { display: flex; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .law-search-input {
+    border: none; outline: none;
+    font-family: inherit;
+    font-size: 14px;
+    width: 180px;
+    color: var(--text-dark);
+    background: transparent;
+  }
+  .law-search-count {
+    font-size: 12px;
+    color: var(--text-light);
+    white-space: nowrap;
+    min-width: 36px;
+    text-align: center;
+  }
+  .law-search-nav {
+    width: 26px; height: 26px;
+    border: 1px solid var(--border);
+    background: var(--light-gray);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-mid);
+    line-height: 1;
+    transition: background 0.12s;
+  }
+  .law-search-nav:hover { background: var(--mid-gray); }
+  .law-search-close {
+    width: 26px; height: 26px;
+    border: none; background: none;
+    cursor: pointer; font-size: 17px;
+    color: var(--text-light);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    transition: background 0.12s;
+  }
+  .law-search-close:hover { background: var(--light-gray); color: var(--text-dark); }
+
+  /* 하이라이트 */
+  .hl-match {
+    background: #FFEE55;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+  .hl-match.hl-current {
+    background: #FF9900;
+    color: white;
+  }
+  .law-page-cat-tag {
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .law-page-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 15px;
+    color: var(--text-light);
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .law-page-meta span { display: flex; align-items: center; gap: 6px; }
+
+  .version-select-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding: 16px 20px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .version-select-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-mid);
+    white-space: nowrap;
+  }
+  .version-dropdown {
+    flex: 1;
+    padding: 9px 14px;
+    border: 1px solid var(--mid-gray);
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-dark);
+    background: white;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    max-width: 420px;
+  }
+  .version-dropdown:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(26,86,160,0.10); }
+
+  .law-content-area {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px 24px;
+    font-size: 14px;
+    line-height: 2.0;
+    color: var(--text-dark);
+    white-space: pre-wrap;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+    word-break: keep-all;
+    width: 100%;
+  }
+
+  /* ── ADMIN PAGE (full page) ── */
+  #adminPage {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--off-white);
+    z-index: 300;
+    overflow-y: auto;
+  }
+  #adminPage.show { display: block; }
+  .admin-page-header {
+    background: var(--text-dark);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .admin-page-header-left { display: flex; align-items: center; gap: 12px; }
+  .admin-title { color: white; font-size: 18px; font-weight: 700; }
+  .admin-badge {
+    background: var(--red);
+    color: white;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .admin-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .admin-back-btn:hover { background: rgba(255,255,255,0.22); }
+  .admin-page-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 32px;
+  }
+  .admin-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 32px;
+    border-bottom: 2px solid var(--border);
+    background: white;
+    border-radius: 8px 8px 0 0;
+    padding: 0 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .admin-tab {
+    padding: 14px 24px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+  .admin-tab:hover { color: var(--text-dark); }
+  .admin-tab.active { color: var(--red); border-bottom-color: var(--red); font-weight: 700; }
+
+  .admin-tab-content { display: none; }
+  .admin-tab-content.show { display: block; }
+  .admin-card {
+    background: white;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 28px 32px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  }
+
+  .form-group { margin-bottom: 20px; }
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-mid);
+    margin-bottom: 7px;
+  }
+  .form-label .required { color: var(--red); margin-left: 3px; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--mid-gray);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-dark);
+    background: white;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(26,86,160,0.10);
+  }
+  .form-textarea { min-height: 200px; resize: vertical; line-height: 1.7; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-hint { font-size: 11px; color: var(--text-light); margin-top: 5px; }
+
+  .btn {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--red); color: white; }
+  .btn-primary:hover { background: var(--red-dark); }
+  .btn-secondary { background: var(--light-gray); color: var(--text-mid); }
+  .btn-secondary:hover { background: var(--mid-gray); }
+  .btn-danger { background: #FF4444; color: white; }
+  .btn-danger:hover { background: #CC2222; }
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+
+  .admin-law-list { display: flex; flex-direction: column; gap: 10px; }
+  .admin-law-item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    overflow: hidden;
+  }
+  .admin-law-item-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    gap: 14px;
+    cursor: default;
+  }
+  .admin-law-item-header:hover { background: var(--off-white); }
+  .admin-law-info { flex: 1; }
+  .admin-law-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+  .admin-law-sub { font-size: 12px; color: var(--text-light); margin-top: 3px; }
+  .admin-law-actions { display: flex; gap: 8px; }
+
+  /* version manager panel */
+  .version-manager {
+    display: none;
+    background: var(--off-white);
+    border-top: 1px solid var(--border);
+    padding: 16px 20px;
+  }
+  .version-manager.open { display: block; }
+  .version-manager-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .version-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .version-row:last-child { margin-bottom: 0; }
+  .version-row-label { flex: 1; color: var(--text-mid); }
+  .version-row-tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+  .version-row-tag.cur { background: var(--red); color: white; }
+  .version-row-tag.old { background: var(--mid-gray); color: var(--text-mid); }
+  .version-move-btn {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.1s;
+    flex-shrink: 0;
+  }
+  .version-move-btn:hover { background: var(--light-gray); }
+  .version-move-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* login logo fix */
+  .login-logo { margin-bottom: 10px; display: flex; justify-content: center; }
+
+  /* ── LOGIN MODAL ── */
+  .login-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 400;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .login-overlay.show { display: flex; }
+  .login-modal {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 360px;
+    padding: 36px 32px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  .login-logo { font-size: 28px; margin-bottom: 6px; }
+  .login-title { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+  .login-sub { font-size: 13px; color: var(--text-light); margin-bottom: 28px; }
+  .login-error {
+    background: #FFF0F0;
+    color: var(--red);
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .login-error.show { display: block; }
+  .login-form .form-group { text-align: left; }
+  .login-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .login-actions .btn { flex: 1; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text-dark);
+    color: white;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast.success { background: #1A7A3C; }
+  .toast.error { background: var(--red); }
+
+  /* ── EDIT PAGE (full page) ── */
+  #editPage {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--off-white);
+    z-index: 350;
+    overflow-y: auto;
+  }
+  #editPage.show { display: block; }
+  .edit-page-header {
+    background: var(--red);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .edit-title { color: white; font-size: 18px; font-weight: 700; }
+  .edit-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .edit-back-btn:hover { background: rgba(255,255,255,0.3); }
+  .edit-page-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 32px;
+  }
+  .edit-card {
+    background: white;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 32px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  }
+
+  footer {
+    background: var(--text-dark);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 28px 24px;
+    font-size: 13px;
+    margin-top: 60px;
+    line-height: 1.8;
+  }
+  footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
+  footer a:hover { color: white; }
+
+  @media (max-width: 768px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .sidebar { order: -1; }
+    .form-row { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 24px; }
+    .header-nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo-area" id="logoArea">
+      <div class="maple-icon">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="20,3 24,14 36,14 26,21 30,33 20,26 10,33 14,21 4,14 16,14" fill="#1A56A0"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-main">익스테딕 공화국 법령정보센터</span>
+        <span class="logo-sub">Extedic Republic Legal Information Centre</span>
+      </div>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-btn active" data-view="home">홈</button>
+      <button class="nav-btn" data-view="all">전체 법령</button>
+      <button class="nav-btn" data-view="recent">최근 개정</button>
+      <button class="nav-btn" data-view="guide">이용 안내</button>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1>익스테딕 공화국 법령을 쉽고 빠르게</h1>
+    <p>법령 및 명령, 조례, 규정 등 모든 익스테딕 법령 정보를<br>한곳에서 검색하고 열람하세요.</p>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="법령명, 조문 내용, 키워드로 검색...">
+      <button id="searchBtn"><span>🔍</span><span>검색</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORY BAR -->
+<div class="category-bar">
+  <div class="category-inner" id="categoryInner">
+    <button class="cat-tab active" data-cat="all">전체</button>
+    <button class="cat-tab" data-cat="constitutional">헌법·기본법</button>
+    <button class="cat-tab" data-cat="criminal">형사법</button>
+    <button class="cat-tab" data-cat="civil">민사법</button>
+    <button class="cat-tab" data-cat="immigration">이민법</button>
+    <button class="cat-tab" data-cat="tax">세법</button>
+    <button class="cat-tab" data-cat="decree">명령</button>
+    <button class="cat-tab" data-cat="etc">기타법</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-layout">
+  <!-- LAW LIST -->
+  <div>
+    <div class="section-header">
+      <span class="section-title">법령 목록</span>
+      <span class="count-badge" id="lawCount">0건</span>
+    </div>
+    <div class="law-list" id="lawList"></div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-card-header">📊 현황</div>
+      <div class="sidebar-card-body">
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-num" id="totalCount">0</div>
+            <div class="stat-label">전체 법령</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" id="recentCount">0</div>
+            <div class="stat-label">최근 개정</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-card-header">📢 공지사항</div>
+      <div class="sidebar-card-body" id="noticeBody">
+        <div style="font-size:13px;color:var(--text-light);text-align:center;padding:12px 0;">등록된 공지가 없습니다.</div>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-card-header">🔗 바로가기</div>
+      <div class="sidebar-card-body">
+        <div class="notice-item"><a href="https://open.kakao.com/o/gLS3cmwh" target="_blank">본국</a></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- LAW DETAIL PAGE (full page) -->
+<div id="lawPage">
+  <!-- 고정 검색 버튼 (오른쪽 상단) -->
+  <div class="law-search-fixed" id="lawSearchFixed">
+    <div class="law-search-box" id="lawSearchBox">
+      <input type="text" id="lawSearchInput" class="law-search-input" placeholder="법령 내 검색..."
+        oninput="highlightSearch()"
+        onkeydown="if(event.key==='Escape')closeLawSearch();else if(event.key==='Enter')jumpHighlight(1);">
+      <span class="law-search-count" id="lawSearchCount"></span>
+      <button class="law-search-nav" onclick="jumpHighlight(-1)" title="이전">‹</button>
+      <button class="law-search-nav" onclick="jumpHighlight(1)" title="다음">›</button>
+      <button class="law-search-close" onclick="closeLawSearch()">×</button>
+    </div>
+    <button class="law-search-btn" id="lawSearchBtn" onclick="toggleLawSearch()" title="본문 검색">🔍</button>
+  </div>
+  <div class="law-page-header">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <button class="law-page-back" onclick="closeLawPage()">← 목록으로</button>
+      <span id="lawPageHeaderTitle" style="font-size:15px;font-weight:600;color:var(--text-mid);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:500px;"></span>
+    </div>
+    <span class="law-category-tag tag-constitutional" id="lawPageCatBadge" style="font-size:12px;padding:5px 14px;border-radius:20px;"></span>
+  </div>
+  <div class="law-page-inner">
+    <div class="law-page-title-row">
+      <div class="law-page-title" id="lawPageTitle"></div>
+    </div>
+    <div class="law-page-meta" id="lawPageMeta"></div>
+    <div class="version-select-row">
+      <span class="version-select-label">📋 버전 선택</span>
+      <select class="version-dropdown" id="versionDropdown" onchange="onVersionDropdownChange()"></select>
+    </div>
+    <div class="law-content-area" id="lawPageContent"></div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-modal">
+    <div class="login-logo">
+      <svg viewBox="0 0 48 48" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="24,4 29,17 44,17 32,26 37,40 24,31 11,40 16,26 4,17 19,17" fill="#1A56A0"/>
+        <polygon points="24,10 28,20 38,20 30,26 33,37 24,31 15,37 18,26 10,20 20,20" fill="white" opacity="0.3"/>
+      </svg>
+    </div>
+    <div class="login-title">관리자 로그인</div>
+    <div class="login-sub">법령정보센터 관리자 전용</div>
+    <div class="login-error" id="loginError">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+    <div class="login-form">
+      <div class="form-group">
+        <label class="form-label">아이디</label>
+        <input type="text" class="form-input" id="loginId" placeholder="관리자 아이디 입력">
+      </div>
+      <div class="form-group">
+        <label class="form-label">비밀번호</label>
+        <input type="password" class="form-input" id="loginPw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+    </div>
+    <div class="login-actions">
+      <button class="btn btn-secondary" onclick="closeLogin()">취소</button>
+      <button class="btn btn-primary" onclick="doLogin()">로그인</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PAGE (full page) -->
+<div id="adminPage">
+  <div class="admin-page-header">
+    <div class="admin-page-header-left">
+      <div class="admin-title">🛠 관리자 패널</div>
+      <div class="admin-badge">ADMIN</div>
+    </div>
+    <button class="admin-back-btn" onclick="closeAdmin()">← 사이트로 돌아가기</button>
+  </div>
+  <div class="admin-page-inner">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('upload', this)">법령 업로드</button>
+      <button class="admin-tab" onclick="switchAdminTab('manage', this)">법령 관리</button>
+    </div>
+
+    <!-- UPLOAD TAB -->
+    <div class="admin-tab-content show" id="tab-upload">
+      <div class="admin-card">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">법령명 <span class="required">*</span></label>
+            <input type="text" class="form-input" id="uploadTitle" placeholder="예: 캐나다 형법 (Criminal Code)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">분류 <span class="required">*</span></label>
+            <select class="form-select" id="uploadCategory">
+              <option value="constitutional">헌법·기본법</option>
+              <option value="criminal">형사법</option>
+              <option value="civil">민사법</option>
+              <option value="immigration">이민법</option>
+              <option value="tax">세법</option>
+              <option value="decree">명령 (행정명령·대통령령·운영부령)</option>
+              <option value="etc">기타법</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">시행 일자 <span class="required">*</span></label>
+            <input type="text" class="form-input" id="uploadDate" placeholder="예: 2025.09.01 또는 2025-09-01 00:00">
+            <div class="form-hint">실제 개정·시행 일자를 직접 입력하세요 (자유 형식)</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">법령 번호</label>
+            <input type="text" class="form-input" id="uploadLawNum" placeholder="예: R.S.C., 1985, c. C-46">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">개정 사유 / 비고</label>
+          <input type="text" class="form-input" id="uploadNote" placeholder="예: 제12조 성범죄 처벌 규정 강화">
+        </div>
+        <div class="form-group">
+          <label class="form-label">법령 내용 <span class="required">*</span></label>
+          <textarea class="form-textarea" id="uploadContent" placeholder="법령 전문을 입력하세요...&#10;&#10;제1조 (목적)&#10;이 법은 ..."></textarea>
+        </div>
+        <div style="display:flex; gap:12px;">
+          <button class="btn btn-primary" onclick="uploadLaw()">✔ 등록</button>
+          <button class="btn btn-secondary" onclick="clearUploadForm()">초기화</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANAGE TAB -->
+    <div class="admin-tab-content" id="tab-manage">
+      <div class="admin-card">
+        <div class="admin-law-list" id="adminLawList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PAGE (full page) -->
+<div id="editPage">
+  <div class="edit-page-header">
+    <div class="edit-title">✏️ 법령 수정</div>
+    <button class="edit-back-btn" onclick="closeEdit()">← 관리자 패널로</button>
+  </div>
+  <div class="edit-page-inner">
+    <div class="edit-card">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">법령명 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="editTitle">
+        </div>
+        <div class="form-group">
+          <label class="form-label">분류</label>
+          <select class="form-select" id="editCategory">
+            <option value="constitutional">헌법·기본법</option>
+            <option value="criminal">형사법</option>
+            <option value="civil">민사법</option>
+            <option value="immigration">이민법</option>
+            <option value="tax">세법</option>
+            <option value="decree">명령 (행정명령·대통령령·운영부령)</option>
+            <option value="etc">기타법</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">개정 일자 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="editDate" placeholder="예: 2025.11.01">
+          <div class="form-hint">수정 시 실제 개정 일자를 직접 입력하세요</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">개정 사유</label>
+          <input type="text" class="form-input" id="editNote" placeholder="예: 제5조 개정">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">법령 내용 <span class="required">*</span></label>
+        <textarea class="form-textarea" id="editContent" style="min-height:340px;"></textarea>
+      </div>
+      <div style="display:flex; gap:12px;">
+        <button class="btn btn-primary" onclick="saveEdit()">💾 저장 (이전 버전 백업)</button>
+        <button class="btn btn-secondary" onclick="closeEdit()">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<footer>
+  <div>익스테딕 공화국 법령정보센터 · Extedic Republic Legal Information Centre</div>
+  <div style="margin-top:6px; font-size:12px;">
+    법령 내용은 참고용이며, 법적 효력은 공식 문서를 따릅니다. · 이 사이트는 비공식 서비스입니다.
+  </div>
+</footer>
+
+<script type="module">
+// ──────────────────────────────────────────────
+//  FIREBASE SETUP
+//  경로: /extedic_laws/{id} — 다른 사이트 데이터와 충돌 없음
+// ──────────────────────────────────────────────
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import { getDatabase, ref, set, remove, onValue, push }
+  from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDIffZz4ImYy9wlUujnirN4jk5ObYp7PNw",
+  authDomain: "miramira-9a34c.firebaseapp.com",
+  databaseURL: "https://miramira-9a34c-default-rtdb.firebaseio.com",
+  projectId: "miramira-9a34c",
+  storageBucket: "miramira-9a34c.firebasestorage.app",
+  messagingSenderId: "506476561553",
+  appId: "1:506476561553:web:16befbf7b689c053536b30"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+const LAWS_PATH = 'extedic_laws'; // ← 전용 경로, 타 사이트 데이터와 분리
+
+// ──────────────────────────────────────────────
+//  STATE
+// ──────────────────────────────────────────────
+let laws = [];
+let currentCategory = 'all';
+let editingId = null;
+let logoClickCount = 0;
+let logoClickTimer = null;
+let viewingLaw = null;
+
+// ──────────────────────────────────────────────
+//  FIREBASE ↔ LOCAL SYNC
+// ──────────────────────────────────────────────
+function showLoading(on) {
+  document.getElementById('loadingOverlay').style.display = on ? 'flex' : 'none';
+}
+
+// 실시간 리스너 — DB 변경 시 자동 반영
+onValue(ref(db, LAWS_PATH), (snapshot) => {
+  laws = [];
+  const data = snapshot.val();
+  if (data) {
+    Object.entries(data).forEach(([fbKey, val]) => {
+      laws.push({
+        id: fbKey,           // Firebase key를 id로 사용
+        title:    val.title    || '',
+        category: val.category || 'constitutional',
+        date:     val.date     || '',
+        content:  val.content  || '',
+        lawNum:   val.lawNum   || '',
+        note:     val.note     || '',
+        versions: val.versions ? Object.values(val.versions) : []
+      });
+    });
+    // 최신 등록순 정렬 (createdAt 기준, 없으면 id 역순)
+    laws.sort((a, b) => (b.createdAt || b.id) > (a.createdAt || a.id) ? 1 : -1);
+  }
+  renderLaws();
+  renderNotices();
+  renderAdminList();
+  showLoading(false);
+}, (error) => {
+  console.error('Firebase 읽기 오류:', error);
+  showLoading(false);
+  showToast('데이터 로드 실패: ' + error.message, 'error');
+});
+
+// DB에 법령 저장 (신규/덮어쓰기)
+async function saveLawToDB(law) {
+  const { id, ...data } = law;
+  // versions 배열 → 객체로 변환 (Firebase는 배열 비권장)
+  if (data.versions && data.versions.length > 0) {
+    const verObj = {};
+    data.versions.forEach((v, i) => { verObj['v' + i] = v; });
+    data.versions = verObj;
+  } else {
+    data.versions = null; // 빈 버전은 null로 저장해 용량 절약
+  }
+  await set(ref(db, `${LAWS_PATH}/${id}`), data);
+}
+
+// DB에서 법령 완전 삭제
+async function deleteLawFromDB(id) {
+  await remove(ref(db, `${LAWS_PATH}/${id}`));
+}
+
+// ──────────────────────────────────────────────
+//  RENDER
+// ──────────────────────────────────────────────
+const tagLabels = {
+  constitutional: '헌법·기본법',
+  criminal:       '형사법',
+  civil:          '민사법',
+  immigration:    '이민법',
+  tax:            '세법',
+  labor:          '기타법',   // 하위호환 (기존 DB 데이터 대응)
+  decree:         '명령',
+  etc:            '기타법'
+};
+
+function renderLaws() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = laws.filter(l => {
+    const catOk = currentCategory === 'all' || l.category === currentCategory;
+    const qOk   = !q || l.title.toLowerCase().includes(q)
+                     || l.content.toLowerCase().includes(q)
+                     || (l.note && l.note.toLowerCase().includes(q));
+    return catOk && qOk;
+  });
+
+  document.getElementById('lawCount').textContent   = filtered.length + '건';
+  document.getElementById('totalCount').textContent  = laws.length;
+  const yr = new Date().getFullYear();
+  document.getElementById('recentCount').textContent =
+    laws.filter(l => l.date.startsWith(yr+'') || l.date.startsWith((yr-1)+'')).length;
+
+  const list = document.getElementById('lawList');
+  if (filtered.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#aaa;font-size:14px;">' +
+      (laws.length === 0 ? '등록된 법령이 없습니다.' : '검색 결과가 없습니다.') + '</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(l => `
+    <div class="law-card" onclick="openLaw('${l.id}')">
+      <div class="law-card-top">
+        <div class="law-title">${l.title}</div>
+        <span class="law-category-tag tag-${l.category}">${tagLabels[l.category] || l.category}</span>
+      </div>
+      <div class="law-meta">
+        <span>📅 ${l.date} 개정</span>
+        ${l.lawNum ? `<span>📌 ${l.lawNum}</span>` : ''}
+        ${l.versions.length > 0 ? `<span class="version-badge">개정 이력 ${l.versions.length + 1}건</span>` : ''}
+        ${l.note ? `<span style="color:#999">· ${l.note}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ──────────────────────────────────────────────
+//  FILTER / SEARCH
+// ──────────────────────────────────────────────
+function filterCategory(cat) {
+  currentCategory = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.cat === cat);
+  });
+  renderLaws();
+}
+
+function filterLaws() { renderLaws(); }
+
+function setView(v) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  currentCategory = 'all';
+  document.querySelectorAll('.cat-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.cat === 'all');
+  });
+  document.getElementById('searchInput').value = '';
+  renderLaws();
+}
+
+// ──────────────────────────────────────────────
+//  LAW DETAIL PAGE
+// ──────────────────────────────────────────────
+window.openLaw = function(id) {
+  const law = laws.find(l => l.id === id);
+  if (!law) return;
+  viewingLaw = law;
+
+  document.getElementById('lawPageHeaderTitle').textContent = law.title;
+  document.getElementById('lawPageTitle').textContent = law.title;
+
+  const badge = document.getElementById('lawPageCatBadge');
+  badge.textContent = tagLabels[law.category] || law.category;
+  badge.className = `law-category-tag tag-${law.category}`;
+  badge.style.cssText = 'font-size:12px;padding:5px 14px;border-radius:20px;';
+
+  document.getElementById('lawPageMeta').innerHTML = `
+    <span>📅 ${law.date} 개정</span>
+    ${law.lawNum ? `<span>📌 ${law.lawNum}</span>` : ''}
+    ${law.note  ? `<span>📝 ${law.note}</span>`   : ''}
+  `;
+
+  const dropdown = document.getElementById('versionDropdown');
+  let opts = `<option value="current">${law.date} 개정 (최신)</option>`;
+  law.versions.slice().reverse().forEach((v, i) => {
+    const realIdx = law.versions.length - 1 - i;
+    opts += `<option value="${realIdx}">${v.date} 개정${v.note ? ' — ' + v.note : ''}</option>`;
+  });
+  dropdown.innerHTML = opts;
+  dropdown.value = 'current';
+
+  // 법령 내용 원본 텍스트 저장 (하이라이트 적용 전)
+  document.getElementById('lawPageContent').textContent = law.content;
+  document.getElementById('lawPage').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  // 검색창 초기화
+  closeLawSearch();
+  document.getElementById('lawSearchInput').value = '';
+};
+
+window.onVersionDropdownChange = function() {
+  if (!viewingLaw) return;
+  const val = document.getElementById('versionDropdown').value;
+  let text;
+  if (val === 'current') {
+    text = viewingLaw.content;
+  } else {
+    const v = viewingLaw.versions[parseInt(val)];
+    text = v ? v.content : viewingLaw.content;
+  }
+  document.getElementById('lawPageContent').textContent = text;
+  // 버전 바꿔도 검색어 유지하며 재하이라이트
+  const q = document.getElementById('lawSearchInput').value.trim();
+  if (q) { setTimeout(() => highlightSearch(), 0); }
+};
+
+window.closeLawPage = function() {
+  closeLawSearch();
+  document.getElementById('lawPage').classList.remove('show');
+  document.body.style.overflow = '';
+};
+
+// ──────────────────────────────────────────────
+//  LAW INNER SEARCH & HIGHLIGHT
+// ──────────────────────────────────────────────
+let hlCurrentIdx = 0;
+
+window.toggleLawSearch = function() {
+  const box = document.getElementById('lawSearchBox');
+  if (box.classList.contains('open')) {
+    closeLawSearch();
+  } else {
+    box.classList.add('open');
+    setTimeout(() => document.getElementById('lawSearchInput').focus(), 50);
+  }
+};
+
+window.closeLawSearch = function() {
+  const box = document.getElementById('lawSearchBox');
+  box.classList.remove('open');
+  document.getElementById('lawSearchInput').value = '';
+  document.getElementById('lawSearchCount').textContent = '';
+  hlCurrentIdx = 0;
+  // 하이라이트 제거
+  const area = document.getElementById('lawPageContent');
+  if (area && area.querySelector('.hl-match')) {
+    area.textContent = area.innerText;
+  }
+};
+
+window.highlightSearch = function() {
+  const q = document.getElementById('lawSearchInput').value;
+  const area = document.getElementById('lawPageContent');
+  const countEl = document.getElementById('lawSearchCount');
+
+  // 원본 텍스트 복구 후 하이라이트 적용
+  const rawText = area.innerText;
+  if (!q.trim()) {
+    area.textContent = rawText;
+    countEl.textContent = '';
+    hlCurrentIdx = 0;
+    return;
+  }
+
+  // 대소문자 무시 이스케이프
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escaped})`, 'gi');
+  const highlighted = rawText.replace(regex, '<mark class="hl-match">$1</mark>');
+  area.innerHTML = highlighted;
+
+  const marks = area.querySelectorAll('.hl-match');
+  const total = marks.length;
+  if (total === 0) {
+    countEl.textContent = '없음';
+    hlCurrentIdx = 0;
+    return;
+  }
+  hlCurrentIdx = 0;
+  marks[0].classList.add('hl-current');
+  marks[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  countEl.textContent = `1 / ${total}`;
+};
+
+window.jumpHighlight = function(dir) {
+  const area = document.getElementById('lawPageContent');
+  const marks = area.querySelectorAll('.hl-match');
+  const total = marks.length;
+  if (total === 0) return;
+  marks[hlCurrentIdx].classList.remove('hl-current');
+  hlCurrentIdx = (hlCurrentIdx + dir + total) % total;
+  marks[hlCurrentIdx].classList.add('hl-current');
+  marks[hlCurrentIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('lawSearchCount').textContent = `${hlCurrentIdx + 1} / ${total}`;
+};
+
+// ──────────────────────────────────────────────
+//  LOGO TRIPLE CLICK → ADMIN LOGIN
+// ──────────────────────────────────────────────
+document.getElementById('logoArea').addEventListener('click', () => {
+  logoClickCount++;
+  clearTimeout(logoClickTimer);
+  logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 600);
+  if (logoClickCount >= 3) {
+    logoClickCount = 0;
+    document.getElementById('loginOverlay').classList.add('show');
+    document.getElementById('loginId').focus();
+    document.getElementById('loginError').classList.remove('show');
+    document.getElementById('loginId').value = '';
+    document.getElementById('loginPw').value = '';
+  }
+});
+
+window.closeLogin = function() {
+  document.getElementById('loginOverlay').classList.remove('show');
+};
+window.doLogin = function() {
+  const id = document.getElementById('loginId').value.trim();
+  const pw = document.getElementById('loginPw').value;
+  if (id === 'admin' && pw === 'admin') {
+    closeLogin();
+    openAdmin();
+  } else {
+    document.getElementById('loginError').classList.add('show');
+    document.getElementById('loginPw').value = '';
+    document.getElementById('loginPw').focus();
+  }
+};
+
+// ──────────────────────────────────────────────
+//  ADMIN PANEL
+// ──────────────────────────────────────────────
+window.openAdmin = function() {
+  document.getElementById('adminPage').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('show'));
+  document.querySelectorAll('.admin-tab')[0].classList.add('active');
+  document.getElementById('tab-upload').classList.add('show');
+  renderAdminList();
+};
+window.closeAdmin = function() {
+  document.getElementById('adminPage').classList.remove('show');
+  document.body.style.overflow = '';
+};
+window.switchAdminTab = function(tab, el) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('show'));
+  document.getElementById('tab-' + tab).classList.add('show');
+  if (tab === 'manage') renderAdminList();
+};
+
+function renderAdminList() {
+  const el = document.getElementById('adminLawList');
+  if (laws.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;font-size:14px;">등록된 법령이 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = laws.map(l => {
+    const allVersions = [
+      { label: `${l.date} 개정${l.note ? ' — '+l.note : ''}`, isCurrent: true },
+      ...l.versions.map(v => ({ label: `${v.date} 개정${v.note ? ' — '+v.note : ''}`, isCurrent: false }))
+    ];
+    const versionRows = allVersions.map((v, pos) => `
+      <div class="version-row">
+        <span class="version-row-label">${v.label}</span>
+        <span class="version-row-tag ${v.isCurrent ? 'cur' : 'old'}">${v.isCurrent ? '최신' : '백업'}</span>
+        <button class="version-move-btn" title="위로"   onclick="moveVersion('${l.id}',${pos},-1)" ${pos===0 ? 'disabled' : ''}>↑</button>
+        <button class="version-move-btn" title="아래로" onclick="moveVersion('${l.id}',${pos}, 1)" ${pos===allVersions.length-1 ? 'disabled' : ''}>↓</button>
+      </div>`).join('');
+
+    return `
+    <div class="admin-law-item" id="ali-${l.id}">
+      <div class="admin-law-item-header">
+        <div class="admin-law-info">
+          <div class="admin-law-name">${l.title}</div>
+          <div class="admin-law-sub">${tagLabels[l.category]||l.category} · ${l.date} · 버전 ${l.versions.length+1}개</div>
+        </div>
+        <div class="admin-law-actions">
+          ${l.versions.length>0 ? `<button class="btn btn-secondary btn-sm" onclick="toggleVersionManager('${l.id}')">버전 순서</button>` : ''}
+          <button class="btn btn-secondary btn-sm" onclick="openEdit('${l.id}')">수정</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteLaw('${l.id}')">삭제</button>
+        </div>
+      </div>
+      ${l.versions.length>0 ? `
+      <div class="version-manager" id="vm-${l.id}">
+        <div class="version-manager-title">⇅ 버전 순서 조정 — 위로 올릴수록 최신으로 표시됩니다</div>
+        ${versionRows}
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+window.toggleVersionManager = function(id) {
+  const vm = document.getElementById('vm-' + id);
+  if (vm) vm.classList.toggle('open');
+};
+
+window.moveVersion = async function(lawId, pos, dir) {
+  const law = laws.find(l => l.id === lawId);
+  if (!law) return;
+  const allVersions = [
+    { date: law.date, note: law.note, content: law.content },
+    ...law.versions.map(v => ({ date: v.date, note: v.note, content: v.content }))
+  ];
+  const newPos = pos + dir;
+  if (newPos < 0 || newPos >= allVersions.length) return;
+  [allVersions[pos], allVersions[newPos]] = [allVersions[newPos], allVersions[pos]];
+
+  law.date    = allVersions[0].date;
+  law.note    = allVersions[0].note;
+  law.content = allVersions[0].content;
+  law.versions = allVersions.slice(1);
+
+  showLoading(true);
+  try {
+    await saveLawToDB(law);
+    showToast('버전 순서가 변경되었습니다.', 'success');
+    const vm = document.getElementById('vm-' + lawId);
+    if (vm) vm.classList.add('open');
+  } catch(e) {
+    showToast('저장 실패: ' + e.message, 'error');
+    showLoading(false);
+  }
+};
+
+// ──────────────────────────────────────────────
+//  UPLOAD
+// ──────────────────────────────────────────────
+window.uploadLaw = async function() {
+  const title    = document.getElementById('uploadTitle').value.trim();
+  const category = document.getElementById('uploadCategory').value;
+  const date     = document.getElementById('uploadDate').value.trim();
+  const content  = document.getElementById('uploadContent').value.trim();
+  const lawNum   = document.getElementById('uploadLawNum').value.trim();
+  const note     = document.getElementById('uploadNote').value.trim();
+
+  if (!title || !date || !content) {
+    showToast('법령명, 시행일자, 내용은 필수입니다.', 'error');
+    return;
+  }
+
+  showLoading(true);
+  try {
+    // push → Firebase 자동 고유키 생성
+    const newRef = push(ref(db, LAWS_PATH));
+    const newLaw = {
+      id: newRef.key,
+      title, category, date, content, lawNum, note,
+      versions: [],
+      createdAt: Date.now()
+    };
+    await saveLawToDB(newLaw);
+    clearUploadForm();
+    showToast(`"${title}" 법령이 등록되었습니다.`, 'success');
+  } catch(e) {
+    showToast('등록 실패: ' + e.message, 'error');
+    showLoading(false);
+  }
+};
+
+window.clearUploadForm = function() {
+  ['uploadTitle','uploadDate','uploadContent','uploadLawNum','uploadNote'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+};
+
+// ──────────────────────────────────────────────
+//  EDIT
+// ──────────────────────────────────────────────
+window.openEdit = function(id) {
+  const law = laws.find(l => l.id === id);
+  if (!law) return;
+  editingId = id;
+  document.getElementById('editTitle').value    = law.title;
+  document.getElementById('editCategory').value = law.category;
+  document.getElementById('editDate').value     = '';
+  document.getElementById('editNote').value     = '';
+  document.getElementById('editContent').value  = law.content;
+  document.getElementById('editPage').classList.add('show');
+};
+window.closeEdit = function() {
+  document.getElementById('editPage').classList.remove('show');
+  editingId = null;
+};
+window.saveEdit = async function() {
+  const law = laws.find(l => l.id === editingId);
+  if (!law) return;
+
+  const newDate    = document.getElementById('editDate').value.trim();
+  const newNote    = document.getElementById('editNote').value.trim();
+  const newContent = document.getElementById('editContent').value.trim();
+  const newTitle   = document.getElementById('editTitle').value.trim();
+  const newCategory = document.getElementById('editCategory').value;
+
+  if (!newDate)    { showToast('개정 일자를 입력해 주세요.', 'error'); return; }
+  if (!newContent) { showToast('법령 내용을 입력해 주세요.', 'error'); return; }
+
+  // 현재 버전 백업
+  law.versions.push({ date: law.date, note: law.note, content: law.content });
+  law.title    = newTitle;
+  law.category = newCategory;
+  law.date     = newDate;
+  law.note     = newNote;
+  law.content  = newContent;
+
+  showLoading(true);
+  try {
+    await saveLawToDB(law);
+    closeEdit();
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('show'));
+    document.querySelectorAll('.admin-tab')[1].classList.add('active');
+    document.getElementById('tab-manage').classList.add('show');
+    showToast(`"${law.title}" 수정 완료 (이전 버전 백업됨)`, 'success');
+  } catch(e) {
+    showToast('저장 실패: ' + e.message, 'error');
+    showLoading(false);
+  }
+};
+
+// ──────────────────────────────────────────────
+//  DELETE — Firebase에서 완전 제거 (용량 절약)
+// ──────────────────────────────────────────────
+window.deleteLaw = async function(id) {
+  const law = laws.find(l => l.id === id);
+  if (!law) return;
+  if (!confirm(`"${law.title}"을(를) 삭제하시겠습니까?\n스토리지에서 완전히 삭제되며 복구할 수 없습니다.`)) return;
+
+  showLoading(true);
+  try {
+    await deleteLawFromDB(id); // remove()로 노드 완전 삭제
+    showToast('법령이 완전히 삭제되었습니다.', 'error');
+  } catch(e) {
+    showToast('삭제 실패: ' + e.message, 'error');
+    showLoading(false);
+  }
+};
+
+// ──────────────────────────────────────────────
+//  TOAST
+// ──────────────────────────────────────────────
+window.showToast = function(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type==='success' ? ' success' : type==='error' ? ' error' : '');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = 'toast'; }, 3000);
+};
+function showToast(msg, type) { window.showToast(msg, type); }
+
+// ──────────────────────────────────────────────
+//  NOTICES
+// ──────────────────────────────────────────────
+function renderNotices() {
+  const items = [];
+  laws.forEach(l => {
+    items.push({ title: l.title, date: l.date, note: l.note });
+    l.versions.forEach(v => items.push({ title: l.title, date: v.date, note: v.note }));
+  });
+  items.sort((a, b) => b.date.localeCompare(a.date));
+  const top = items.slice(0, 5);
+  const el = document.getElementById('noticeBody');
+  if (top.length === 0) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--text-light);text-align:center;padding:12px 0;">등록된 공지가 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = top.map(item => `
+    <div class="notice-item">
+      <span style="font-size:13px;color:var(--text-mid);font-weight:500;line-height:1.5;">${item.title}${item.note ? ' — '+item.note : ''}</span>
+      <div class="notice-date">${item.date} 개정</div>
+    </div>
+  `).join('');
+}
+
+// ──────────────────────────────────────────────
+//  INIT — 이벤트 리스너 연결 + Firebase 로딩
+// ──────────────────────────────────────────────
+
+// 메인 검색
+document.getElementById('searchInput').addEventListener('input', filterLaws);
+document.getElementById('searchBtn').addEventListener('click', filterLaws);
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') filterLaws();
+});
+
+// 카테고리 탭
+document.getElementById('categoryInner').addEventListener('click', e => {
+  const btn = e.target.closest('.cat-tab');
+  if (btn) filterCategory(btn.dataset.cat);
+});
+
+// 상단 nav
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    setView(this.dataset.view);
+  });
+});
+
+showLoading(true);
+</script>
+<!-- LOADING OVERLAY -->
+<div id="loadingOverlay" style="display:none;position:fixed;inset:0;background:rgba(255,255,255,0.85);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+  <div style="width:40px;height:40px;border:4px solid var(--mid-gray);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;"></div>
+  <div style="font-size:14px;color:var(--text-mid);font-weight:500;">데이터를 불러오는 중...</div>
+</div>
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+</body>
+</html>
