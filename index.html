@@ -840,6 +840,9 @@
   }
   .version-move-btn:hover { background: var(--light-gray); }
   .version-move-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .version-del-btn { border-color: #FFCCCC; color: #CC3333; font-size: 12px; }
+  .version-del-btn:hover { background: #FFF0F0 !important; border-color: #CC3333; }
+  .version-del-btn:disabled { opacity: 0.25; cursor: not-allowed; }
 
   /* login logo fix */
   .login-logo { margin-bottom: 10px; display: flex; justify-content: center; }
@@ -1091,10 +1094,7 @@
     <button class="law-search-btn" id="lawSearchBtn" onclick="toggleLawSearch()" title="본문 검색">🔍</button>
   </div>
   <div class="law-page-header">
-    <div style="display:flex;align-items:center;gap:14px;">
-      <button class="law-page-back" onclick="closeLawPage()">← 목록으로</button>
-      <span id="lawPageHeaderTitle" style="font-size:15px;font-weight:600;color:var(--text-mid);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:500px;"></span>
-    </div>
+    <button class="law-page-back" onclick="closeLawPage()">← 목록으로</button>
     <span class="law-category-tag tag-constitutional" id="lawPageCatBadge" style="font-size:12px;padding:5px 14px;border-radius:20px;"></span>
   </div>
   <div class="law-page-inner">
@@ -1451,7 +1451,6 @@ window.openLaw = function(id) {
   if (!law) return;
   viewingLaw = law;
 
-  document.getElementById('lawPageHeaderTitle').textContent = law.title;
   document.getElementById('lawPageTitle').textContent = law.title;
 
   const badge = document.getElementById('lawPageCatBadge');
@@ -1664,6 +1663,7 @@ function renderAdminList() {
         <span class="version-row-tag ${v.isCurrent ? 'cur' : 'old'}">${v.isCurrent ? '최신' : '백업'}</span>
         <button class="version-move-btn" title="위로"   onclick="moveVersion('${l.id}',${pos},-1)" ${pos===0?'disabled':''}>↑</button>
         <button class="version-move-btn" title="아래로" onclick="moveVersion('${l.id}',${pos}, 1)" ${pos===allVersions.length-1?'disabled':''}>↓</button>
+        <button class="version-move-btn version-del-btn" title="이 판 삭제" onclick="deleteVersion('${l.id}',${pos})" ${allVersions.length===1?'disabled':''}>🗑</button>
       </div>`).join('');
 
     return `
@@ -1716,14 +1716,57 @@ function renderAbolishedList() {
     el.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;font-size:14px;">폐지된 법령이 없습니다.</div>';
     return;
   }
-  el.innerHTML = abolished.map(l => `
-    <div class="admin-law-item">
-      <div class="admin-law-name-btn" style="cursor:default;">
+  el.innerHTML = abolished.map(l => {
+    const allVersions = [
+      { label: `${l.date} 폐지${l.note ? ' — '+l.note : ''}`, isCurrent: true },
+      ...l.versions.map(v => ({
+        label: `${v.date} 개정${v.note ? ' — '+v.note : ''}${v.content && v.content.trim()==='<폐지>' ? ' [폐지]' : ''}`,
+        isCurrent: false
+      }))
+    ];
+    const versionRows = allVersions.map((v, pos) => `
+      <div class="version-row">
+        <span class="version-row-label">${v.label}</span>
+        <span class="version-row-tag ${v.isCurrent ? 'cur' : 'old'}">${v.isCurrent ? '최신' : '백업'}</span>
+        <button class="version-move-btn" title="위로"   onclick="moveVersion('${l.id}',${pos},-1)" ${pos===0?'disabled':''}>↑</button>
+        <button class="version-move-btn" title="아래로" onclick="moveVersion('${l.id}',${pos}, 1)" ${pos===allVersions.length-1?'disabled':''}>↓</button>
+        <button class="version-move-btn version-del-btn" title="이 판 삭제" onclick="deleteVersion('${l.id}',${pos})" ${allVersions.length===1?'disabled':''}>🗑</button>
+      </div>`).join('');
+
+    return `
+    <div class="admin-law-item" id="ali-ab-${l.id}">
+      <button class="admin-law-name-btn" onclick="toggleActionPanel('ab-${l.id}')">
         <span class="admin-law-name-text" style="color:#999;text-decoration:line-through;">${l.title}</span>
-        <span class="admin-law-name-sub">${tagLabels[l.category]||l.category} · 폐지일: ${l.abolishedDate || l.date}</span>
+        <span class="admin-law-name-sub">폐지일: ${l.abolishedDate || l.date}</span>
+        <span class="admin-law-chevron" id="chev-ab-${l.id}">▾</span>
+      </button>
+      <div class="action-panel" id="ap-ab-${l.id}">
+        <div class="action-panel-buttons">
+          <button class="btn btn-secondary btn-sm" onclick="openEdit('${l.id}')">✏️ 수정 (복구 가능)</button>
+          <button class="btn btn-secondary btn-sm" onclick="toggleCategoryPanel('ab-${l.id}')">🏷️ 분류 변경</button>
+          ${l.versions.length>0 ? `<button class="btn btn-secondary btn-sm" onclick="toggleVersionManager('ab-${l.id}')">⇅ 버전 순서</button>` : ''}
+        </div>
+        <div class="category-panel" id="cp-ab-${l.id}">
+          <span class="category-panel-label">분류 변경</span>
+          <select class="form-select" id="cps-ab-${l.id}" style="flex:1;max-width:260px;padding:7px 12px;font-size:13px;">
+            <option value="constitutional" ${l.category==='constitutional'?'selected':''}>헌법·기본법</option>
+            <option value="criminal"       ${l.category==='criminal'?'selected':''}>형사법</option>
+            <option value="civil"          ${l.category==='civil'?'selected':''}>민사법</option>
+            <option value="decree"         ${l.category==='decree'?'selected':''}>명령 (행정명령·대통령령·운영부령)</option>
+            <option value="treaty"         ${l.category==='treaty'?'selected':''}>조약 (국제조약)</option>
+            <option value="etc"            ${l.category==='etc'?'selected':''}>기타법</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="saveCategoryChange('${l.id}', 'ab-${l.id}')">저장</button>
+          <button class="btn btn-secondary btn-sm" onclick="toggleCategoryPanel('ab-${l.id}')">취소</button>
+        </div>
+        ${l.versions.length>0 ? `
+        <div class="version-manager" id="vm-ab-${l.id}">
+          <div class="version-manager-title">⇅ 버전 순서 조정</div>
+          ${versionRows}
+        </div>` : ''}
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 window.toggleActionPanel = function(id) {
@@ -1760,14 +1803,15 @@ window.toggleCategoryPanel = function(id) {
   if (cp) cp.classList.toggle('open');
 };
 
-window.saveCategoryChange = async function(id) {
+window.saveCategoryChange = async function(id, panelId) {
   const law = laws.find(l => l.id === id);
   if (!law) return;
-  const sel = document.getElementById('cps-' + id);
+  const cpId  = panelId || id;
+  const sel   = document.getElementById('cps-' + cpId);
   if (!sel) return;
   const newCat = sel.value;
   if (newCat === law.category) {
-    toggleCategoryPanel(id);
+    toggleCategoryPanel(cpId);
     return;
   }
   law.category = newCat;
@@ -1810,8 +1854,53 @@ window.moveVersion = async function(lawId, pos, dir) {
 };
 
 // ──────────────────────────────────────────────
-//  UPLOAD
+//  DELETE SPECIFIC VERSION
 // ──────────────────────────────────────────────
+window.deleteVersion = async function(lawId, pos) {
+  const law = laws.find(l => l.id === lawId);
+  if (!law) return;
+
+  // 전체 버전 배열 구성 [현재, ...백업]
+  const allVersions = [
+    { date: law.date, note: law.note, content: law.content },
+    ...law.versions.map(v => ({ date: v.date, note: v.note, content: v.content }))
+  ];
+
+  if (allVersions.length <= 1) {
+    showToast('마지막 판은 삭제할 수 없습니다.', 'error');
+    return;
+  }
+
+  const target = allVersions[pos];
+  const isCurrent = pos === 0;
+  const label = isCurrent
+    ? `${target.date} 개정 (최신 현재 판)`
+    : `${target.date} 개정 (백업 판)`;
+
+  if (!confirm(`"${label}"을 삭제하시겠습니까?\n${isCurrent ? '바로 아래 백업 판이 최신으로 승격됩니다.' : '이 작업은 되돌릴 수 없습니다.'}`)) return;
+
+  // 해당 pos 제거
+  allVersions.splice(pos, 1);
+
+  // 첫 번째 = 현재 버전으로 재구성
+  law.date     = allVersions[0].date;
+  law.note     = allVersions[0].note;
+  law.content  = allVersions[0].content;
+  law.versions = allVersions.slice(1);
+
+  // 폐지 여부 재평가
+  law.abolished     = law.content.trim() === '<폐지>';
+  law.abolishedDate = law.abolished ? law.date : null;
+
+  showLoading(true);
+  try {
+    await saveLawToDB(law);
+    showToast(`판이 삭제되었습니다.`, 'success');
+  } catch(e) {
+    showToast('저장 실패: ' + e.message, 'error');
+    showLoading(false);
+  }
+};
 window.uploadLaw = async function() {
   const title    = document.getElementById('uploadTitle').value.trim();
   const category = document.getElementById('uploadCategory').value;
