@@ -962,7 +962,94 @@
     box-shadow: 0 1px 6px rgba(0,0,0,0.04);
   }
 
-  footer {
+  /* ── 정렬 + 접기 ── */
+  .sort-btns {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .sort-btn {
+    padding: 5px 12px;
+    border: none;
+    background: white;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.13s;
+  }
+  .sort-btn + .sort-btn { border-left: 1px solid var(--border); }
+  .sort-btn.active { background: var(--red); color: white; font-weight: 600; }
+  .sort-btn:hover:not(.active) { background: var(--light-gray); color: var(--text-dark); }
+
+  .collapse-btn {
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: white;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.13s;
+    white-space: nowrap;
+  }
+  .collapse-btn:hover { background: var(--light-gray); }
+
+  /* 법령 목록 접기 */
+  #lawList.collapsed { display: none; }
+
+  /* ── 검색 결과 (hero 바로 아래, 전체 결과 표시) ── */
+  .search-result-drop {
+    display: none;
+    background: white;
+    border-bottom: 2px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  }
+  .search-result-drop.show { display: block; }
+  .search-result-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 8px 0;
+    text-align: left;
+  }
+  .search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .search-result-item:last-child { border-bottom: none; }
+  .search-result-item:hover { background: var(--light-gray); }
+  .search-result-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+    flex: 1;
+  }
+  .search-result-meta {
+    font-size: 12px;
+    color: var(--text-light);
+    white-space: nowrap;
+  }
+  .search-empty {
+    padding: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-light);
+  }
+
+  /* 검색 중일 때 사이드바 숨김 */
+  .main-layout.search-active { grid-template-columns: 1fr; }
+  .main-layout.search-active #mainSidebar { display: none; }
+
+  /* hero는 position relative 불필요 */
     background: var(--text-dark);
     color: rgba(255,255,255,0.6);
     text-align: center;
@@ -1014,11 +1101,16 @@
     <h1>익스테딕 공화국 법령을 쉽고 빠르게</h1>
     <p>법령 및 명령, 조례, 규정 등 모든 익스테딕 법령 정보를<br>한곳에서 검색하고 열람하세요.</p>
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="법령명, 조문 내용, 키워드로 검색...">
+      <input type="text" id="searchInput" placeholder="법령명, 발의인, 키워드로 검색...">
       <button id="searchBtn"><span>🔍</span><span>검색</span></button>
     </div>
   </div>
 </section>
+
+<!-- 검색 결과 (hero 아래, 전체 폭) -->
+<div class="search-result-drop" id="searchResultDrop">
+  <div class="search-result-inner" id="searchResultInner"></div>
+</div>
 
 <!-- CATEGORY BAR -->
 <div class="category-bar">
@@ -1035,18 +1127,27 @@
 </div>
 
 <!-- MAIN -->
-<div class="main-layout">
+<div class="main-layout" id="mainLayout">
   <!-- LAW LIST -->
   <div>
     <div class="section-header">
-      <span class="section-title">법령 목록</span>
-      <span class="count-badge" id="lawCount">0건</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="section-title">법령 목록</span>
+        <span class="count-badge" id="lawCount">0건</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="sort-btns">
+          <button class="sort-btn active" id="sortAlpha" onclick="setSort('alpha')">가나다순</button>
+          <button class="sort-btn" id="sortDate" onclick="setSort('date')">발의순</button>
+        </div>
+        <button class="collapse-btn" id="collapseBtn" onclick="toggleLawList()">접기 ▴</button>
+      </div>
     </div>
     <div class="law-list" id="lawList"></div>
   </div>
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="mainSidebar">
     <div class="sidebar-card">
       <div class="sidebar-card-header">📊 현황</div>
       <div class="sidebar-card-body">
@@ -1161,7 +1262,7 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">법령명 <span class="required">*</span></label>
-            <input type="text" class="form-input" id="uploadTitle" placeholder="예: 캐나다 형법 (Criminal Code)">
+            <input type="text" class="form-input" id="uploadTitle" placeholder="예: 익스테딕 형법">
           </div>
           <div class="form-group">
             <label class="form-label">분류 <span class="required">*</span></label>
@@ -1178,17 +1279,30 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">시행 일자 <span class="required">*</span></label>
-            <input type="text" class="form-input" id="uploadDate" placeholder="예: 2025.09.01 또는 2025-09-01 00:00">
+            <input type="text" class="form-input" id="uploadDate" placeholder="예: 2025.09.01">
             <div class="form-hint">실제 개정·시행 일자를 직접 입력하세요 (자유 형식)</div>
           </div>
           <div class="form-group">
-            <label class="form-label">법령 번호</label>
-            <input type="text" class="form-input" id="uploadLawNum" placeholder="예: R.S.C., 1985, c. C-46">
+            <label class="form-label">개정 사유 / 비고</label>
+            <input type="text" class="form-input" id="uploadNote" placeholder="예: 제12조 처벌 규정 강화">
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">개정 사유 / 비고</label>
-          <input type="text" class="form-input" id="uploadNote" placeholder="예: 제12조 성범죄 처벌 규정 강화">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">발의인 <span style="color:#aaa;font-weight:400;font-size:11px;">선택</span></label>
+            <input type="text" class="form-input" id="uploadProposer" placeholder="예: 홍길동 의원">
+          </div>
+          <div class="form-group">
+            <label class="form-label">국회 정원수 <span style="color:#aaa;font-weight:400;font-size:11px;">선택</span></label>
+            <input type="number" class="form-input" id="uploadTotalSeats" placeholder="예: 300" min="1">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">찬성 의석수 <span style="color:#aaa;font-weight:400;font-size:11px;">선택</span></label>
+            <input type="number" class="form-input" id="uploadApprovalSeats" placeholder="예: 187" min="0">
+          </div>
+          <div class="form-group"></div>
         </div>
         <div class="form-group">
           <label class="form-label">법령 내용 <span class="required">*</span></label>
@@ -1256,10 +1370,10 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<footer>
-  <div>익스테딕 공화국 법령정보센터 · Extedic Republic Legal Information Centre</div>
-  <div style="margin-top:6px; font-size:12px;">
-    법령 내용은 참고용이며, 법적 효력은 공식 문서를 따릅니다. · 이 사이트는 비공식 서비스입니다.
+<footer style="background:#888888;color:rgba(255,255,255,0.9);text-align:center;padding:20px 24px;font-size:13px;margin-top:60px;line-height:1.8;">
+  <div>익스테딕 공화국 법령정보센터</div>
+  <div style="margin-top:4px; font-size:12px; opacity:0.8;">
+    법령 내용은 참고용입니다, 법적 효력은 공식 문서를 따릅니다.
   </div>
 </footer>
 
@@ -1317,6 +1431,9 @@ onValue(ref(db, LAWS_PATH), (snapshot) => {
         content:       val.content       || '',
         lawNum:        val.lawNum        || '',
         note:          val.note          || '',
+        proposer:      val.proposer      || null,
+        totalSeats:    val.totalSeats    || null,
+        approvalSeats: val.approvalSeats || null,
         abolished:     val.abolished     || false,
         abolishedDate: val.abolishedDate || null,
         createdAt:     val.createdAt     || 0,
@@ -1330,6 +1447,8 @@ onValue(ref(db, LAWS_PATH), (snapshot) => {
   renderNotices();
   renderAdminList();
   renderAbolishedList();
+  // 목록 기본 접힘 적용
+  applyCollapseUI();
   showLoading(false);
 }, (error) => {
   console.error('Firebase 읽기 오류:', error);
@@ -1376,7 +1495,7 @@ const tagLabels = {
 
 function renderLaws() {
   const q = document.getElementById('searchInput').value.toLowerCase();
-  const filtered = laws.filter(l => {
+  let filtered = laws.filter(l => {
     const isAbolished = l.abolished === true;
     let catOk;
     if (currentCategory === 'abolished') {
@@ -1388,9 +1507,12 @@ function renderLaws() {
     }
     const qOk = !q || l.title.toLowerCase().includes(q)
                    || l.content.toLowerCase().includes(q)
-                   || (l.note && l.note.toLowerCase().includes(q));
+                   || (l.note     && l.note.toLowerCase().includes(q))
+                   || (l.proposer && l.proposer.toLowerCase().includes(q));
     return catOk && qOk;
   });
+
+  filtered = sortLaws(filtered);
 
   document.getElementById('lawCount').textContent   = filtered.length + '건';
   document.getElementById('totalCount').textContent  = laws.filter(l => !l.abolished).length;
@@ -1412,7 +1534,8 @@ function renderLaws() {
       </div>
       <div class="law-meta">
         <span>${l.abolished ? '🚫' : '📅'} ${l.date} ${l.abolished ? '폐지' : '개정'}</span>
-        ${l.lawNum ? `<span>📌 ${l.lawNum}</span>` : ''}
+        ${l.proposer ? `<span>👤 ${l.proposer}</span>` : ''}
+        ${l.totalSeats != null && l.approvalSeats != null ? `<span>🗳 ${l.approvalSeats}/${l.totalSeats}석</span>` : ''}
         ${l.versions.length > 0 ? `<span class="version-badge">이력 ${l.versions.length + 1}건</span>` : ''}
         ${l.note ? `<span style="color:#bbb">· ${l.note}</span>` : ''}
       </div>
@@ -1421,17 +1544,113 @@ function renderLaws() {
 }
 
 // ──────────────────────────────────────────────
-//  FILTER / SEARCH
+//  FILTER / SEARCH / SORT / COLLAPSE
 // ──────────────────────────────────────────────
+let currentSort      = 'alpha'; // 'alpha' | 'date'
+let lawListCollapsed = true;
+let isSearching      = false;   // 검색 중 여부
+
+function sortLaws(arr) {
+  if (currentSort === 'alpha') {
+    return [...arr].sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+  }
+  return [...arr].sort((a, b) => b.date.localeCompare(a.date));
+}
+
+window.setSort = function(mode) {
+  currentSort = mode;
+  document.getElementById('sortAlpha').classList.toggle('active', mode === 'alpha');
+  document.getElementById('sortDate').classList.toggle('active',  mode === 'date');
+  renderLaws();
+};
+
+window.toggleLawList = function() {
+  // 검색 중엔 접기/펼치기 무시
+  if (isSearching) return;
+  lawListCollapsed = !lawListCollapsed;
+  applyCollapseUI();
+};
+
+function applyCollapseUI() {
+  const list = document.getElementById('lawList');
+  const btn  = document.getElementById('collapseBtn');
+  if (!list || !btn) return;
+  list.classList.toggle('collapsed', lawListCollapsed && !isSearching);
+  btn.textContent = (lawListCollapsed && !isSearching) ? '펼치기 ▾' : '접기 ▴';
+}
+
+// ── 검색 드롭다운 ──
+function showSearchDrop(q) {
+  const drop   = document.getElementById('searchResultDrop');
+  const inner  = document.getElementById('searchResultInner');
+  const layout = document.getElementById('mainLayout');
+
+  if (!q.trim()) {
+    clearSearch();
+    return;
+  }
+
+  isSearching = true;
+  layout.classList.add('search-active');
+  // 검색 중엔 목록 펼침
+  const list = document.getElementById('lawList');
+  const btn  = document.getElementById('collapseBtn');
+  if (list) list.classList.remove('collapsed');
+  if (btn)  btn.textContent = '접기 ▴';
+
+  const matched = laws.filter(l => {
+    if (l.abolished) return false;
+    return l.title.toLowerCase().includes(q)
+        || l.content.toLowerCase().includes(q)
+        || (l.note     && l.note.toLowerCase().includes(q))
+        || (l.proposer && l.proposer.toLowerCase().includes(q));
+  });
+
+  if (matched.length === 0) {
+    inner.innerHTML = `<div class="search-empty">검색 결과가 없습니다.</div>`;
+  } else {
+    inner.innerHTML = sortLaws(matched).map(l => `
+      <div class="search-result-item" onclick="openLaw('${l.id}'); clearSearch();">
+        <span class="law-category-tag tag-${l.category}" style="font-size:10px;padding:2px 8px;border-radius:12px;flex-shrink:0;">${tagLabels[l.category]||l.category}</span>
+        <span class="search-result-name">${l.title}</span>
+        <span class="search-result-meta">${l.proposer ? '👤 '+l.proposer+' · ' : ''}${l.date}</span>
+      </div>
+    `).join('');
+  }
+  drop.classList.add('show');
+}
+
+function clearSearch() {
+  const input  = document.getElementById('searchInput');
+  const drop   = document.getElementById('searchResultDrop');
+  const layout = document.getElementById('mainLayout');
+  if (input) input.value = '';
+  drop.classList.remove('show');
+  layout.classList.remove('search-active');
+  isSearching = false;
+  applyCollapseUI();
+  renderLaws();
+}
+
+// window에 노출 (드롭다운 onclick에서 사용)
+window.clearSearch = clearSearch;
+
+function filterLaws() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  if (q) {
+    showSearchDrop(q);
+  } else {
+    clearSearch();
+  }
+}
+
 function filterCategory(cat) {
   currentCategory = cat;
   document.querySelectorAll('.cat-tab').forEach(t => {
     t.classList.toggle('active', t.dataset.cat === cat);
   });
-  renderLaws();
+  clearSearch();
 }
-
-function filterLaws() { renderLaws(); }
 
 function setView(v) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -1439,8 +1658,7 @@ function setView(v) {
   document.querySelectorAll('.cat-tab').forEach(t => {
     t.classList.toggle('active', t.dataset.cat === 'all');
   });
-  document.getElementById('searchInput').value = '';
-  renderLaws();
+  clearSearch();
 }
 
 // ──────────────────────────────────────────────
@@ -1460,8 +1678,15 @@ window.openLaw = function(id) {
 
   document.getElementById('lawPageMeta').innerHTML = `
     <span>📅 ${law.date} 개정</span>
-    ${law.lawNum ? `<span>📌 ${law.lawNum}</span>` : ''}
-    ${law.note  ? `<span>📝 ${law.note}</span>`   : ''}
+    ${law.note       ? `<span>📝 ${law.note}</span>`       : ''}
+    ${law.proposer   ? `<span>👤 발의인: ${law.proposer}</span>` : ''}
+    ${law.totalSeats    != null && law.approvalSeats != null
+      ? `<span>🗳 ${law.approvalSeats} / ${law.totalSeats}석 찬성</span>`
+      : law.totalSeats    != null
+        ? `<span>🏛 정원: ${law.totalSeats}석</span>`
+        : law.approvalSeats != null
+          ? `<span>✅ 찬성: ${law.approvalSeats}석</span>`
+          : ''}
   `;
 
   const dropdown = document.getElementById('versionDropdown');
@@ -1906,8 +2131,10 @@ window.uploadLaw = async function() {
   const category = document.getElementById('uploadCategory').value;
   const date     = document.getElementById('uploadDate').value.trim();
   const content  = document.getElementById('uploadContent').value.trim();
-  const lawNum   = document.getElementById('uploadLawNum').value.trim();
-  const note     = document.getElementById('uploadNote').value.trim();
+  const note          = document.getElementById('uploadNote').value.trim();
+  const proposer      = document.getElementById('uploadProposer').value.trim();
+  const totalSeats    = document.getElementById('uploadTotalSeats').value.trim();
+  const approvalSeats = document.getElementById('uploadApprovalSeats').value.trim();
 
   if (!title || !date || !content) {
     showToast('법령명, 시행일자, 내용은 필수입니다.', 'error');
@@ -1916,12 +2143,16 @@ window.uploadLaw = async function() {
 
   showLoading(true);
   try {
-    // push → Firebase 자동 고유키 생성
     const newRef = push(ref(db, LAWS_PATH));
     const newLaw = {
       id: newRef.key,
-      title, category, date, content, lawNum, note,
+      title, category, date, content, note,
+      proposer:      proposer      || null,
+      totalSeats:    totalSeats    ? parseInt(totalSeats)    : null,
+      approvalSeats: approvalSeats ? parseInt(approvalSeats) : null,
       versions: [],
+      abolished: false,
+      abolishedDate: null,
       createdAt: Date.now()
     };
     await saveLawToDB(newLaw);
@@ -1934,7 +2165,7 @@ window.uploadLaw = async function() {
 };
 
 window.clearUploadForm = function() {
-  ['uploadTitle','uploadDate','uploadContent','uploadLawNum','uploadNote'].forEach(id => {
+  ['uploadTitle','uploadDate','uploadContent','uploadNote','uploadProposer','uploadTotalSeats','uploadApprovalSeats'].forEach(id => {
     document.getElementById(id).value = '';
   });
 };
@@ -2071,11 +2302,25 @@ function renderNotices() {
 //  INIT — 이벤트 리스너 연결 + Firebase 로딩
 // ──────────────────────────────────────────────
 
-// 메인 검색
+// ──────────────────────────────────────────────
+//  INIT — 이벤트 리스너 연결 + Firebase 로딩
+// ──────────────────────────────────────────────
+
+// 메인 검색 — input 이벤트에서 실시간 드롭다운
 document.getElementById('searchInput').addEventListener('input', filterLaws);
 document.getElementById('searchBtn').addEventListener('click', filterLaws);
 document.getElementById('searchInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') filterLaws();
+  if (e.key === 'Enter')  filterLaws();
+  if (e.key === 'Escape') clearSearch();
+});
+
+// 검색창·드롭다운 외부 클릭 시 검색 해제
+document.addEventListener('click', e => {
+  const drop  = document.getElementById('searchResultDrop');
+  const input = document.getElementById('searchInput');
+  const btn   = document.getElementById('searchBtn');
+  if (e.target === input || e.target === btn || (drop && drop.contains(e.target))) return;
+  if (isSearching) clearSearch();
 });
 
 // 카테고리 탭
